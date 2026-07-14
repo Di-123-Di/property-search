@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+const logger = require("./middleware/logger");
+app.use(logger);
 const propertiesRouter = require("./routes/properties");
 app.use("/api/properties", propertiesRouter);
 

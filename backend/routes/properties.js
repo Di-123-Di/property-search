@@ -69,4 +69,46 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id/openhouses", async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id || id.length > 50) {
+      return res.status(400).json({ error: "Invalid listing ID" });
+    }
+    const [property] = await pool.query(
+      "SELECT id FROM rets_property WHERE L_ListingID = ?",
+      [id]
+    );
+    if (property.length === 0) {
+      return res.status(404).json({ error: "Property not found" });
+    }
+    const [openhouses] = await pool.query(
+      "SELECT * FROM rets_openhouse WHERE L_ListingID = ? ORDER BY OpenHouseDate ASC, OH_StartTime ASC",
+      [id]
+    );
+    res.json(openhouses);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id || id.length > 50) {
+      return res.status(400).json({ error: "Invalid listing ID" });
+    }
+    const [rows] = await pool.query(
+      "SELECT * FROM rets_property WHERE L_ListingID = ?",
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Property not found" });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;
