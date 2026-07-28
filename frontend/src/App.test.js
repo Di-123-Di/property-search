@@ -1,8 +1,20 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => ({ total: 0, limit: 20, offset: 0, results: [] }),
+  });
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
+test("renders the property listings heading", async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const heading = await screen.findByText(/property listings/i);
+  expect(heading).toBeInTheDocument();
 });
