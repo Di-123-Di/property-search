@@ -151,3 +151,39 @@ h1 {
 .status.error {
   color: red;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.pagination-nav,
+.pagination-page {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination-nav:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pagination-page.active {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+  color: white;
+}
+
+.pagination-ellipsis {
+  padding: 0 4px;
+  color: #666;
+}

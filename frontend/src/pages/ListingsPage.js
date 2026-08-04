@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { fetchProperties, cleanFilters } from "../api/client";
 import PropertyCard from "../components/PropertyCard";
 import PropertyFilters from "../components/PropertyFilters";
+import Pagination from "../components/Pagination";
 
 const NO_FILTERS = {};
+const ITEMS_PER_PAGE = 20;
 
 function ListingsPage() {
   const [appliedFilters, setAppliedFilters] = useState(NO_FILTERS);
+  const [currentPage, setCurrentPage] = useState(1);
   const [properties, setProperties] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -14,17 +17,19 @@ function ListingsPage() {
 
   useEffect(() => {
     // `stale` guards against the race condition where an older request
-    // (e.g. a slow "Search") resolves AFTER a newer one (e.g. "Clear" or
-    // a second search) and overwrites its results. Whenever appliedFilters
-    // changes, React runs this cleanup for the previous effect run and
-    // marks that request's callbacks as stale, so their results are
-    // discarded instead of flashing on screen.
+    // (e.g. a slow "Search") resolves AFTER a newer one (e.g. "Clear", a
+    // second search, or a page change) and overwrites its results. Whenever
+    // appliedFilters or currentPage changes, React runs this cleanup for the
+    // previous effect run and marks that request's callbacks as stale, so
+    // their results are discarded instead of flashing on screen.
     let stale = false;
 
     setLoading(true);
     setError(null);
 
-    fetchProperties({ ...appliedFilters, limit: 20 })
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    fetchProperties({ ...appliedFilters, limit: ITEMS_PER_PAGE, offset })
       .then((data) => {
         if (stale) return;
         setProperties(data.results);
@@ -40,15 +45,26 @@ function ListingsPage() {
     return () => {
       stale = true;
     };
-  }, [appliedFilters]);
+  }, [appliedFilters, currentPage]);
 
   function handleSearch(filters) {
     setAppliedFilters(cleanFilters(filters));
+    setCurrentPage(1);
   }
 
   function handleClear() {
     setAppliedFilters(NO_FILTERS);
+    setCurrentPage(1);
   }
+
+  function handlePageChange(page) {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  }
+
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+  const rangeStart = total === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const rangeEnd = Math.min(currentPage * ITEMS_PER_PAGE, total);
 
   return (
     <div className="listings-page">
@@ -61,7 +77,7 @@ function ListingsPage() {
       {!loading && !error && (
         <>
           <p className="count">
-            Showing {properties.length} of {total} properties
+            Showing {rangeStart}-{rangeEnd} of {total} properties
           </p>
           {properties.length === 0 ? (
             <div className="status">
@@ -74,6 +90,11 @@ function ListingsPage() {
               ))}
             </div>
           )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
     </div>
