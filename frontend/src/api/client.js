@@ -29,3 +29,11 @@ export async function fetchPropertyDetail(id) {
   }
   return res.json();
 }
+
+export async function fetchOpenHouses(id) {
+  const res = await fetch(`${BASE_URL}/properties/${id}/openhouses`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch open houses: ${res.status}`);
+  }
+  return res.json();
+}

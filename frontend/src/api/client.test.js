@@ -1,4 +1,9 @@
-import { fetchProperties, fetchPropertyDetail, cleanFilters } from "./client";
+import {
+  fetchProperties,
+  fetchPropertyDetail,
+  fetchOpenHouses,
+  cleanFilters,
+} from "./client";
 
 // global.fetch does not exist in the jsdom test environment, so we replace
 // it with a jest mock function before each test. jest.fn() lets us control
@@ -72,6 +77,32 @@ test("fetchPropertyDetail throws a not-found error on a 404 response", async () 
 
   await expect(fetchPropertyDetail("abc123")).rejects.toThrow(
     "Property not found: 404"
+  );
+});
+
+test("fetchOpenHouses requests the openhouses endpoint for the given listing id", async () => {
+  const payload = [{ id: 1, OpenHouseDate: "2026-06-16" }];
+  global.fetch.mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => payload,
+  });
+
+  const data = await fetchOpenHouses("999");
+
+  expect(global.fetch).toHaveBeenCalledWith("/api/properties/999/openhouses");
+  expect(data).toEqual(payload);
+});
+
+test("fetchOpenHouses throws when the response is not ok", async () => {
+  global.fetch.mockResolvedValue({
+    ok: false,
+    status: 404,
+    json: async () => ({ error: "Property not found" }),
+  });
+
+  await expect(fetchOpenHouses("invalid-id")).rejects.toThrow(
+    "Failed to fetch open houses: 404"
   );
 });
 

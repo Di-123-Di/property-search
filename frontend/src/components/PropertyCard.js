@@ -1,26 +1,18 @@
-function parsePhotos(raw) {
-  try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed[0];
-    }
-  } catch (e) {}
-  return null;
-}
+import { useNavigate } from "react-router-dom";
+import PropertyImageCarousel from "./PropertyImageCarousel";
 
 function PropertyCard({ property }) {
-  const photo = parsePhotos(property.L_Photos);
+  const navigate = useNavigate();
   const price = property.L_SystemPrice
     ? "$" + property.L_SystemPrice.toLocaleString()
     : "Price unavailable";
 
   return (
-    <div className="property-card">
-      {photo ? (
-        <img src={photo} alt={property.L_Address} />
-      ) : (
-        <div className="no-photo">No Photo</div>
-      )}
+    <div
+      className="property-card"
+      onClick={() => navigate(`/property/${property.L_ListingID}`)}
+    >
+      <PropertyImageCarousel photosJson={property.L_Photos} alt={property.L_Address} />
       <div className="card-info">
         <div className="price">{price}</div>
         <div className="address">{property.L_Address}</div>
