@@ -2,6 +2,18 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
+// SQL identifiers (column names, ASC/DESC) can't be passed as query
+// parameter placeholders (`?`), so the only safe way to let a client choose
+// a sort column is to whitelist the exact real SQL column names here and
+// look up the client's friendly key against it — never interpolate
+// req.query.sortBy directly into the query string.
+const SORTABLE_COLUMNS = {
+  price: "L_SystemPrice",
+  dateListed: "ListingContractDate",
+  sqft: "LM_Int2_3",
+  beds: "L_Keyword2",
+};
+
 router.get("/", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
@@ -54,13 +66,28 @@ router.get("/", async (req, res) => {
       values.push(Number(req.query.baths));
     }
 
+    let orderBy = "";
+    if (req.query.sortBy) {
+      const column = SORTABLE_COLUMNS[req.query.sortBy];
+      if (!column) {
+        return res.status(400).json({
+          error: `sortBy must be one of: ${Object.keys(SORTABLE_COLUMNS).join(", ")}`,
+        });
+      }
+      const sortOrderInput = (req.query.sortOrder || "asc").toLowerCase();
+      if (sortOrderInput !== "asc" && sortOrderInput !== "desc") {
+        return res.status(400).json({ error: "sortOrder must be 'asc' or 'desc'" });
+      }
+      orderBy = `ORDER BY ${column} ${sortOrderInput.toUpperCase()}`;
+    }
+
     const where = conditions.length > 0 ? "WHERE " + conditions.join(" AND ") : "";
 
     const countQuery = `SELECT COUNT(*) as total FROM rets_property ${where}`;
     const [countRows] = await pool.query(countQuery, values);
     const total = countRows[0].total;
 
-    const dataQuery = `SELECT * FROM rets_property ${where} LIMIT ? OFFSET ?`;
+    const dataQuery = `SELECT * FROM rets_property ${where} ${orderBy} LIMIT ? OFFSET ?`;
     const [results] = await pool.query(dataQuery, [...values, limit, offset]);
 
     res.json({ total, limit, offset, results });

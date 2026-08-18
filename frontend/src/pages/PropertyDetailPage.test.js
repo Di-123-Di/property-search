@@ -30,7 +30,10 @@ const property = {
 
 function renderAtId(id) {
   render(
-    <MemoryRouter initialEntries={[`/property/${id}`]}>
+    <MemoryRouter
+      initialEntries={[`/property/${id}`]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
       <Routes>
         <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route path="/" element={<div>Listings page</div>} />
