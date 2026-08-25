@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchPropertyDetail } from "../api/client";
-import { useFavoritesContext } from "../context/FavoritesContext";
+import { useFavoritesContext } from "../hooks/FavoritesContext";
 import PropertyCard from "../components/PropertyCard";
 
 function FavoritesPage() {

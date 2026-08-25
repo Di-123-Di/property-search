@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import FavoritesPage from "./FavoritesPage";
-import { FavoritesProvider } from "../context/FavoritesContext";
+import { FavoritesProvider } from "../hooks/FavoritesContext";
 
 const propertiesById = {
   1: {

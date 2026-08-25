@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useFavoritesContext } from "../context/FavoritesContext";
+import { useFavoritesContext } from "../hooks/FavoritesContext";
 
 function linkClassName({ isActive }) {
   return isActive ? "nav-link active" : "nav-link";

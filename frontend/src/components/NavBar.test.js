@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import NavBar from "./NavBar";
-import { FavoritesProvider } from "../context/FavoritesContext";
+import { FavoritesProvider } from "../hooks/FavoritesContext";
 
 beforeEach(() => {
   localStorage.clear();

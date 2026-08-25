@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import ListingsPage from "./ListingsPage";
-import { FavoritesProvider } from "../context/FavoritesContext";
+import { FavoritesProvider } from "../hooks/FavoritesContext";
 
 function jsonResponse(total, offset) {
   const results = Array.from({ length: 20 }, (_, i) => ({
