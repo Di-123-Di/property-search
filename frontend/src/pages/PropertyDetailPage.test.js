@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import PropertyDetailPage from "./PropertyDetailPage";
 
@@ -60,7 +60,7 @@ test("shows all property fields once loaded", async () => {
 
   renderAtId("999");
 
-  await waitFor(() => screen.getByText("$500,000"));
+  await screen.findByText("$500,000");
 
   expect(screen.getByText(/123 main st, boston, ma 02118/i)).toBeInTheDocument();
   expect(screen.getByText(/3 beds/i)).toBeInTheDocument();
@@ -82,7 +82,7 @@ test("a Back link returns to the listings page", async () => {
 
   renderAtId("999");
 
-  await waitFor(() => screen.getByText("$500,000"));
+  await screen.findByText("$500,000");
   expect(screen.getByRole("link", { name: /back to listings/i })).toHaveAttribute(
     "href",
     "/"
@@ -96,7 +96,7 @@ test("visiting an invalid id shows an error instead of crashing", async () => {
 
   renderAtId("invalid-id");
 
-  await waitFor(() => screen.getByText(/error/i));
+  await screen.findByText(/error/i);
   expect(screen.getByText(/property not found/i)).toBeInTheDocument();
 });
 
@@ -111,6 +111,6 @@ test("does not render a map when latitude/longitude are missing", async () => {
 
   renderAtId("999");
 
-  await waitFor(() => screen.getByText("$500,000"));
+  await screen.findByText("$500,000");
   expect(screen.queryByTitle(/property location/i)).not.toBeInTheDocument();
 });

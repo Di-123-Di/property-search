@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import FavoritesPage from "./FavoritesPage";
 import { FavoritesProvider } from "../context/FavoritesContext";
@@ -78,10 +78,8 @@ test("unfavoriting a property removes it from the Favorites view immediately", a
 
   await screen.findByText("1 Main St");
 
-  const card = screen.getByText("1 Main St").closest(".property-card");
-  fireEvent.click(
-    card.querySelector("button[aria-label='Remove from favorites']")
-  );
+  const card = screen.getByRole("group", { name: "1 Main St" });
+  fireEvent.click(within(card).getByRole("button", { name: "Remove from favorites" }));
 
   await waitFor(() => {
     expect(screen.queryByText("1 Main St")).not.toBeInTheDocument();

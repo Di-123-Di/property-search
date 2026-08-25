@@ -34,6 +34,9 @@ function Lightbox({ photos, startIndex, onClose }) {
       tabIndex={-1}
       onKeyDown={handleKeyDown}
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photo viewer"
     >
       <button
         type="button"

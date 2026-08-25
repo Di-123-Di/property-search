@@ -47,7 +47,11 @@ function OpenHouseList({ openHouses }) {
             <div className="open-house-time">
               {formatTime(openHouse.OH_StartTime)} &ndash; {formatTime(openHouse.OH_EndTime)}
             </div>
-            {remarks && <div className="open-house-remarks">{remarks}</div>}
+            {remarks && (
+              <div className="open-house-remarks" data-testid="open-house-remarks">
+                {remarks}
+              </div>
+            )}
           </li>
         );
       })}
