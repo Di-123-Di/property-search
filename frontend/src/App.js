@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { FavoritesProvider } from "./context/FavoritesContext";
+import { FavoritesProvider } from "./hooks/FavoritesContext";
 import NavBar from "./components/NavBar";
 import ListingsPage from "./pages/ListingsPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";

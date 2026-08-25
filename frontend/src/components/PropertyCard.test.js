@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import PropertyCard from "./PropertyCard";
-import { FavoritesProvider } from "../context/FavoritesContext";
+import { FavoritesProvider } from "../hooks/FavoritesContext";
 
 const property = {
   id: 1,
