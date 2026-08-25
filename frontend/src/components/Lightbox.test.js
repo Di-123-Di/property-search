@@ -34,11 +34,9 @@ test("clicking the close button closes the lightbox", () => {
 
 test("clicking the backdrop (outside the image) closes the lightbox", () => {
   const onClose = jest.fn();
-  const { container } = render(
-    <Lightbox photos={photos} startIndex={0} onClose={onClose} />
-  );
+  render(<Lightbox photos={photos} startIndex={0} onClose={onClose} />);
 
-  fireEvent.click(container.querySelector(".lightbox-overlay"));
+  fireEvent.click(screen.getByRole("dialog"));
 
   expect(onClose).toHaveBeenCalled();
 });
@@ -63,6 +61,7 @@ test("pressing Escape closes the lightbox", () => {
   const onClose = jest.fn();
   render(<Lightbox photos={photos} startIndex={0} onClose={onClose} />);
 
+  // eslint-disable-next-line testing-library/no-node-access
   fireEvent.keyDown(document.activeElement, { key: "Escape" });
 
   expect(onClose).toHaveBeenCalled();
@@ -71,9 +70,11 @@ test("pressing Escape closes the lightbox", () => {
 test("arrow keys navigate photos via the keyboard", () => {
   render(<Lightbox photos={photos} startIndex={0} onClose={jest.fn()} />);
 
+  // eslint-disable-next-line testing-library/no-node-access
   fireEvent.keyDown(document.activeElement, { key: "ArrowRight" });
   expect(screen.getByRole("img")).toHaveAttribute("src", photos[1]);
 
+  // eslint-disable-next-line testing-library/no-node-access
   fireEvent.keyDown(document.activeElement, { key: "ArrowLeft" });
   expect(screen.getByRole("img")).toHaveAttribute("src", photos[0]);
 });

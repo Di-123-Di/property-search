@@ -54,8 +54,8 @@ test("does not render remarks when all_data has none", () => {
     },
   ];
 
-  const { container } = render(<OpenHouseList openHouses={openHouses} />);
-  expect(container.querySelector(".open-house-remarks")).not.toBeInTheDocument();
+  render(<OpenHouseList openHouses={openHouses} />);
+  expect(screen.queryByTestId("open-house-remarks")).not.toBeInTheDocument();
 });
 
 test("does not crash when all_data is malformed JSON", () => {

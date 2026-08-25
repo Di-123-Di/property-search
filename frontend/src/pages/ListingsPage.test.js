@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import ListingsPage from "./ListingsPage";
@@ -51,16 +51,16 @@ afterEach(() => {
 
 test("choosing a sort option sends sortBy/sortOrder and resets to page 1", async () => {
   renderListingsPage();
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
 
   fireEvent.click(screen.getByRole("button", { name: "3" }));
-  await waitFor(() => screen.getByText(/showing 41-60 of 480/i));
+  await screen.findByText(/showing 41-60 of 480/i);
 
   fireEvent.change(screen.getByLabelText(/sort by/i), {
     target: { value: "price-desc" },
   });
 
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
   const url = lastRequestUrl();
   expect(url).toContain("sortBy=price");
   expect(url).toContain("sortOrder=desc");
@@ -69,15 +69,15 @@ test("choosing a sort option sends sortBy/sortOrder and resets to page 1", async
 
 test("sort persists across a page change", async () => {
   renderListingsPage();
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
 
   fireEvent.change(screen.getByLabelText(/sort by/i), {
     target: { value: "price-asc" },
   });
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
 
   fireEvent.click(screen.getByRole("button", { name: "5" }));
-  await waitFor(() => screen.getByText(/showing 81-100 of 480/i));
+  await screen.findByText(/showing 81-100 of 480/i);
 
   const url = lastRequestUrl();
   expect(url).toContain("sortBy=price");
@@ -87,17 +87,17 @@ test("sort persists across a page change", async () => {
 
 test("applying a new filter resets the sort back to default", async () => {
   renderListingsPage();
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
 
   fireEvent.change(screen.getByLabelText(/sort by/i), {
     target: { value: "price-asc" },
   });
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
 
   userEvent.type(screen.getByLabelText(/city/i), "Testville");
   userEvent.click(screen.getByRole("button", { name: /^search$/i }));
 
-  await waitFor(() => screen.getByText(/showing 1-20 of 480/i));
+  await screen.findByText(/showing 1-20 of 480/i);
   const url = lastRequestUrl();
   expect(url).not.toContain("sortBy");
   expect(url).toContain("city=Testville");

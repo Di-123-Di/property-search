@@ -21,6 +21,8 @@ function PropertyCard({ property }) {
   return (
     <div
       className="property-card"
+      role="group"
+      aria-label={property.L_Address}
       onClick={() => navigate(`/property/${property.L_ListingID}`)}
     >
       <PropertyImageCarousel photosJson={property.L_Photos} alt={property.L_Address} />

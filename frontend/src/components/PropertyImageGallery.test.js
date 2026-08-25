@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import PropertyImageGallery from "./PropertyImageGallery";
 
 const threePhotos = JSON.stringify([
@@ -39,15 +39,13 @@ test("clicking a thumbnail updates the main image", () => {
 });
 
 test("clicking the main image opens the lightbox", () => {
-  const { container } = render(
-    <PropertyImageGallery photosJson={threePhotos} alt="123 Main St" />
-  );
+  render(<PropertyImageGallery photosJson={threePhotos} alt="123 Main St" />);
 
-  expect(container.querySelector(".lightbox-overlay")).not.toBeInTheDocument();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByAltText("123 Main St"));
 
-  expect(container.querySelector(".lightbox-overlay")).toBeInTheDocument();
+  expect(screen.getByRole("dialog")).toBeInTheDocument();
 });
 
 test("the lightbox opens showing the currently active thumbnail", () => {
@@ -56,10 +54,6 @@ test("the lightbox opens showing the currently active thumbnail", () => {
   fireEvent.click(screen.getByAltText("123 Main St thumbnail 2"));
   fireEvent.click(screen.getByAltText("123 Main St"));
 
-  // Two images now share this src: the main image and the lightbox image.
-  const matches = screen.getAllByAltText(/2 of 3|123 main st/i);
-  const lightboxImage = matches.find((img) =>
-    img.closest(".lightbox-overlay")
-  );
+  const lightboxImage = within(screen.getByRole("dialog")).getByRole("img");
   expect(lightboxImage).toHaveAttribute("src", "https://example.com/2.jpg");
 });
