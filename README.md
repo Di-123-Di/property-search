@@ -5,11 +5,6 @@ filterable listings, a detail page with a photo gallery and an embedded
 Google map, open house schedules, sorting, and localStorage-backed
 favorites.
 
-<!-- TODO: replace with an actual screenshot of the listings page.
-     Run the app locally (see "Local Setup" below), take a screenshot of
-     http://localhost:3000, and drop it in here, e.g.:
-     ![Listings page](docs/screenshot.png) -->
-
 ## Features
 
 - Searchable, filterable property listings (city, ZIP, price range, beds, baths)
