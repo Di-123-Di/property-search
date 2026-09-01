@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +18,20 @@
     "mysql2": "^3.22.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^30.5.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "routes/**/*.js"
+    ],
+    "coverageThreshold": {
+      "./routes/properties.js": {
+        "statements": 70,
+        "lines": 70
+      }
+    }
   }
 }
