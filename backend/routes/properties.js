@@ -16,13 +16,18 @@ const SORTABLE_COLUMNS = {
 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 20;
-    const offset = parseInt(req.query.offset) || 0;
+    // `parseInt(...) || defaultValue` would silently replace an explicit
+    // limit=0 with the default 20, since 0 is falsy — that let an invalid
+    // value slip past the check below instead of being rejected. Parsing
+    // with Number and only falling back when the param is absent keeps 0
+    // (and any non-numeric value, which becomes NaN) subject to validation.
+    const limit = req.query.limit !== undefined ? Number(req.query.limit) : 20;
+    const offset = req.query.offset !== undefined ? Number(req.query.offset) : 0;
 
-    if (limit <= 0 || limit > 100) {
+    if (!Number.isInteger(limit) || limit <= 0 || limit > 100) {
       return res.status(400).json({ error: "limit must be between 1 and 100" });
     }
-    if (offset < 0) {
+    if (!Number.isInteger(offset) || offset < 0) {
       return res.status(400).json({ error: "offset must be 0 or greater" });
     }
 
