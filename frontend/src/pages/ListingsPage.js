@@ -32,6 +32,10 @@ function ListingsPage() {
 
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
+    // cleanFilters() was written for the filter form, but "no sort chosen"
+    // is represented the same way ({ sortBy: "", sortOrder: "" }), so it
+    // doubles as the right tool for dropping an empty sort selection before
+    // it reaches the query string.
     fetchProperties({ ...appliedFilters, ...cleanFilters(sort), limit: ITEMS_PER_PAGE, offset })
       .then((data) => {
         if (stale) return;
