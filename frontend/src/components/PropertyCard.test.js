@@ -36,6 +36,30 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+test("renders the property's price, address, city/state, and stats", () => {
+  renderCard();
+
+  expect(screen.getByText("$500,000")).toBeInTheDocument();
+  expect(screen.getByText("123 Main St")).toBeInTheDocument();
+  expect(screen.getByText("Boston, MA")).toBeInTheDocument();
+  expect(screen.getByText("3 beds · 2 baths · 1500 sqft")).toBeInTheDocument();
+});
+
+test("falls back to a placeholder when price is missing", () => {
+  render(
+    <MemoryRouter
+      initialEntries={["/"]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <FavoritesProvider>
+        <PropertyCard property={{ ...property, L_SystemPrice: null }} />
+      </FavoritesProvider>
+    </MemoryRouter>
+  );
+
+  expect(screen.getByText("Price unavailable")).toBeInTheDocument();
+});
+
 test("clicking the card navigates to the property detail page", () => {
   renderCard();
 
