@@ -85,6 +85,29 @@ test("sort persists across a page change", async () => {
   expect(url).toContain("offset=80");
 });
 
+// Taking the backend down is the error case users actually hit: the dev
+// server's proxy can't reach :5000 and answers with a 500, which the API
+// client turns into a thrown error. The page must surface that as a
+// message rather than crashing or rendering an empty grid.
+test("shows an error message when the backend is unreachable", async () => {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({ ok: false, status: 500, json: async () => ({}) })
+  );
+
+  renderListingsPage();
+
+  expect(await screen.findByText(/failed to fetch properties: 500/i)).toBeInTheDocument();
+  expect(screen.queryByText(/showing/i)).not.toBeInTheDocument();
+});
+
+test("shows an error message when the request fails outright", async () => {
+  global.fetch = jest.fn(() => Promise.reject(new Error("Network request failed")));
+
+  renderListingsPage();
+
+  expect(await screen.findByText(/network request failed/i)).toBeInTheDocument();
+});
+
 test("applying a new filter resets the sort back to default", async () => {
   renderListingsPage();
   await screen.findByText(/showing 1-20 of 480/i);
