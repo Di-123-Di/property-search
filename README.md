@@ -73,11 +73,24 @@ mysql -u root -p idx_exchange < rets_property.sql
 mysql -u root -p idx_exchange < rets_openhouse.sql
 ```
 
+Then add the performance indexes. The dumps only carry the source feed's
+own indexes, so this step is what makes filtered/sorted searches fast —
+see `PERFORMANCE.md` for the measurements:
+
+```bash
+mysql -u root -p idx_exchange < backend/db/performance-indexes.sql
+```
+
 Verify the import:
 
 ```bash
 mysql -u root -p idx_exchange -e "SELECT COUNT(*) FROM rets_property; SELECT COUNT(*) FROM rets_openhouse;"
 ```
+
+The dumps are refreshed periodically because the listing photo URLs they
+contain are signed and expire over time. If photos render as broken
+images, get a newer dump and re-import — drop the two tables first, since
+the dumps don't include `DROP TABLE` statements.
 
 ### 3. Set up the backend
 
@@ -420,12 +433,15 @@ satisfy before merging.
 ## Known Issues & Future Improvements
 
 - **Some listing photo URLs return 404.** `L_Photos` stores signed URLs
-  from the original MLS media provider, and some of those signatures
-  have since expired — this is a property of the data snapshot, not a
-  bug in the gallery/carousel code. The photo components handle a
-  missing/broken `L_Photos` value gracefully (fall back to "No Photo"),
-  but they can't recover an individual broken URL within an otherwise
-  valid array.
+  from the original MLS media provider, and those signatures expire over
+  time — this is a property of the data snapshot, not a bug in the
+  gallery/carousel code. On the current dump (generated 2026-08-14),
+  roughly 15% of sampled listings have at least one dead photo URL,
+  mostly older/sold listings; on the previous dump it was closer to 60%.
+  Re-importing a fresh dump is the fix. The photo components handle a
+  missing or unparseable `L_Photos` value gracefully (fall back to "No
+  Photo"), but they can't recover an individual broken URL within an
+  otherwise valid array.
 - **`rets_property` and `rets_openhouse` are separate snapshots.** A
   listing ID present in one table isn't guaranteed to exist in the
   other; the open-house endpoint's 404 handling is based only on
