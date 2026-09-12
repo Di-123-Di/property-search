@@ -296,6 +296,38 @@ h1 {
   object-fit: cover;
 }
 
+/* Shown in place of a photo whose URL no longer resolves, so an expired
+   link reads as "this photo is missing" rather than as a broken page. */
+
+.image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ddd;
+  color: #999;
+  font-size: 14px;
+}
+
+.property-carousel .image-fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-main-image.image-fallback {
+  height: 420px;
+}
+
+.gallery-thumbnail.image-fallback {
+  font-size: 18px;
+}
+
+.lightbox-content .image-fallback {
+  width: 60vw;
+  height: 60vh;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
 .carousel-arrow {
   position: absolute;
   top: 50%;

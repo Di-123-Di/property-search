@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { parsePhotos } from "../utils/photos";
+import ImageWithFallback from "./ImageWithFallback";
 import Lightbox from "./Lightbox";
 
 function PropertyImageGallery({ photosJson, alt }) {
@@ -13,7 +14,7 @@ function PropertyImageGallery({ photosJson, alt }) {
 
   return (
     <div className="property-gallery">
-      <img
+      <ImageWithFallback
         className="gallery-main-image"
         src={photos[activeIndex]}
         alt={alt}
@@ -23,13 +24,14 @@ function PropertyImageGallery({ photosJson, alt }) {
       {photos.length > 1 && (
         <div className="gallery-thumbnails">
           {photos.map((photo, i) => (
-            <img
+            <ImageWithFallback
               key={photo}
               src={photo}
               alt={`${alt} thumbnail ${i + 1}`}
               className={
                 i === activeIndex ? "gallery-thumbnail active" : "gallery-thumbnail"
               }
+              fallbackText="×"
               onClick={() => setActiveIndex(i)}
             />
           ))}

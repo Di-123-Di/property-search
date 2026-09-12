@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ImageWithFallback from "./ImageWithFallback";
 
 function Lightbox({ photos, startIndex, onClose }) {
   const [index, setIndex] = useState(startIndex);
@@ -59,7 +60,10 @@ function Lightbox({ photos, startIndex, onClose }) {
           </button>
         )}
 
-        <img src={photos[index]} alt={`${index + 1} of ${photos.length}`} />
+        <ImageWithFallback
+          src={photos[index]}
+          alt={`${index + 1} of ${photos.length}`}
+        />
 
         {photos.length > 1 && (
           <button

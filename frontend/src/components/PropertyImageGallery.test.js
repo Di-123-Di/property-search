@@ -57,3 +57,15 @@ test("the lightbox opens showing the currently active thumbnail", () => {
   const lightboxImage = within(screen.getByRole("dialog")).getByRole("img");
   expect(lightboxImage).toHaveAttribute("src", "https://example.com/2.jpg");
 });
+
+test("a broken main image falls back to a placeholder that still opens the lightbox", () => {
+  render(<PropertyImageGallery photosJson={threePhotos} alt="123 Main St" />);
+
+  fireEvent.error(screen.getByAltText("123 Main St"));
+  const placeholder = screen.getByRole("img", { name: "123 Main St" });
+  expect(placeholder).toHaveTextContent("Photo unavailable");
+
+  fireEvent.click(placeholder);
+
+  expect(screen.getByRole("dialog")).toBeInTheDocument();
+});

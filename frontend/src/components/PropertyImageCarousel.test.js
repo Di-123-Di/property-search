@@ -62,3 +62,27 @@ test("arrow clicks stop propagation so a parent click handler does not fire", ()
 
   expect(onCardClick).not.toHaveBeenCalled();
 });
+
+test("a photo that fails to load is replaced by a placeholder", () => {
+  render(<PropertyImageCarousel photosJson={threePhotos} alt="123 Main St" />);
+
+  fireEvent.error(screen.getByAltText("123 Main St"));
+
+  expect(screen.getByText("Photo unavailable")).toBeInTheDocument();
+  expect(screen.getByText("1 / 3")).toBeInTheDocument();
+});
+
+test("moving past a broken photo shows the next one normally", () => {
+  render(<PropertyImageCarousel photosJson={threePhotos} alt="123 Main St" />);
+
+  fireEvent.error(screen.getByAltText("123 Main St"));
+  expect(screen.getByText("Photo unavailable")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByLabelText(/next photo/i));
+
+  expect(screen.queryByText("Photo unavailable")).not.toBeInTheDocument();
+  expect(screen.getByAltText("123 Main St")).toHaveAttribute(
+    "src",
+    "https://example.com/2.jpg"
+  );
+});

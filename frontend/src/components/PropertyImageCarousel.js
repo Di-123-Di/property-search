@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { parsePhotos } from "../utils/photos";
+import ImageWithFallback from "./ImageWithFallback";
 
 function PropertyImageCarousel({ photosJson, alt }) {
   const photos = parsePhotos(photosJson);
@@ -23,7 +24,7 @@ function PropertyImageCarousel({ photosJson, alt }) {
 
   return (
     <div className="property-carousel">
-      <img src={photos[index]} alt={alt} />
+      <ImageWithFallback src={photos[index]} alt={alt} />
       {photos.length > 1 && (
         <>
           <button
