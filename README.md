@@ -172,13 +172,59 @@ stop both.
 
 ## Data Flow
 
+Following one search — "3-bed listings in Fremont, cheapest first" — from
+the click to the rendered cards and back:
+
 ```
-React (port 3000) → Express API (port 5000) → MySQL (port 3306)
+┌──────────────────────────────────────────────────────────────────────┐
+│  BROWSER — React (:3000)                                             │
+│                                                                      │
+│  PropertyFilters / SortControls / Pagination hold the user's intent  │
+│  as state, ListingsPage merges it into one request, and api/client   │
+│  drops the empty values before building the query string.            │
+└──────────────────────────────────────────────────────────────────────┘
+        │                                               ▲
+        │  GET /api/properties                          │  { total, limit,
+        │      ?city=Fremont&beds=3                     │    offset, results }
+        │      &sortBy=price&sortOrder=asc              │
+        │      &limit=20&offset=0                       │
+        ▼                                               │
+┌──────────────────────────────────────────────────────────────────────┐
+│  dev-server proxy — forwards /api/* to :5000                         │
+│  (dev only; in production the API is served from its own origin)     │
+└──────────────────────────────────────────────────────────────────────┘
+        │                                               ▲
+        ▼                                               │
+┌──────────────────────────────────────────────────────────────────────┐
+│  API — Express (:5000)                                               │
+│                                                                      │
+│  routes/properties.js validates every parameter, rejects bad input   │
+│  with a 400, maps sortBy through a fixed whitelist to a real column  │
+│  name, and assembles a parameterised WHERE/ORDER BY clause.          │
+│  Runs two queries: COUNT(*) for the total, then the page of rows.    │
+└──────────────────────────────────────────────────────────────────────┘
+        │                                               ▲
+        │  SQL + bound values                           │  rows
+        │  (never string-concatenated user input)       │
+        ▼                                               │
+┌──────────────────────────────────────────────────────────────────────┐
+│  DATABASE — MySQL (:3306)                                            │
+│                                                                      │
+│  rets_property, rets_openhouse. Indexes on the normalised city       │
+│  expression and on price+beds keep filtered searches off a full      │
+│  table scan (see PERFORMANCE.md).                                    │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-React never connects directly to MySQL. All data goes through the
-Express API, and the frontend dev server proxies `/api/*` requests to
-port 5000 (see the `proxy` field in `frontend/package.json`).
+On the way back, Express wraps the rows as JSON, React stores them in
+state, and the grid re-renders. Two things are deliberate:
+
+- **React never talks to MySQL.** Credentials and SQL live only on the
+  server, so the database can be changed, moved, or replaced without the
+  frontend knowing.
+- **Nothing the user types reaches SQL as text.** Values travel as bound
+  parameters, and the one thing that can't be bound — the sort column —
+  is resolved through a whitelist instead.
 
 ---
 
